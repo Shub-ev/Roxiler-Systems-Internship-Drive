@@ -47,9 +47,8 @@ const Graph: React.FC<GraphProps> = ({ allApiData, selectedMonth }) => {
         return monthNames[month - 1];
     };
 
-    // render
     return (
-        <div className='mt-10 pr-4'>
+        <div className='mt-10'>
             <h2 className="sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center text-blue-700 mb-6">
                 Bar Chart Stats - <span className='text-red-600'>{getMonthName(selectedMonth)}</span>
             </h2>

@@ -41,7 +41,7 @@ const Statistics: React.FC<Statistics> = ({ month }) => {
     };
 
     return (
-        <div className="w-[100vw] flex justify-center items-center mt-4 rounded-lg shadow-lg lg:mx-14">
+        <div className="w-[100vw] flex justify-center items-center xmt-4">
             <div className="w-[100%] md:w-[100%] lg:w-[85%] bg-white ">
                 <h2 className="sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center text-blue-700 mb-6">
                     Monthly Sales Statistics: <span className='text-red-600'>{getMonthName(month)}</span>
