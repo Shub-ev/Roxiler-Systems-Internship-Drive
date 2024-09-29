@@ -83,7 +83,7 @@ const Table: React.FC = () => {
     return (
         <>
             <div className='w-[100vw] overflow-x-hidden'>
-                <div className='w-[100%] h-[100vh] px-1 py-6 sm:px-4 sm:py-6 lg:px-14 lg:pt-14'>
+                <div className='w-[100%] px-1 py-6 sm:px-4 sm:py-6 lg:px-14 lg:pt-14'>
                     <nav className='flex justify-center mb-4 lg:mb-10'>
                         <span className='text-2xl sm:text-2xl md:text-3xl lg:text-5xl text-blue-700 font-semibold'>Transactions Dashboard</span>
                     </nav>
@@ -120,7 +120,13 @@ const Table: React.FC = () => {
                                                 <td className="border border-black">{data.price.toFixed(3)}</td>
                                                 <td className="border border-black">{data.category}</td>
                                                 <td className="border border-black">{data.sold ? "Yes" : "No"}</td>
-                                                <td className="border border-black">{data.image}</td>
+                                                <td className="border border-black flex items-center justify-center px-2 py-2">
+                                                    <img 
+                                                        src={data.image} 
+                                                        alt={data.title} 
+                                                        className="max-w-[100px] h-auto object-contain" // Responsive styling
+                                                    />
+                                                </td>
                                             </tr>
                                         ))
                                     ) : (
@@ -160,7 +166,7 @@ const Table: React.FC = () => {
                 </div>
             </div>
             <Statistics month={selectedMonth} />
-            <Graph allApiData={allApiData} />
+            <Graph allApiData={allApiData} selectedMonth={selectedMonth}/>
         </>
     );
 };

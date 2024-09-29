@@ -31,7 +31,7 @@ const Statistics: React.FC<Statistics> = ({ month }) => {
         fetchSalesData();
     }, [month]);
 
-    // Function to map month number to month name
+    // function to map month number to month name
     const getMonthName = (month: number): string => {
         const monthNames = [
             "January", "February", "March", "April", "May", "June",

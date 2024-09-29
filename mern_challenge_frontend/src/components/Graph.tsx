@@ -1,13 +1,16 @@
+// necessary imports 
+
 import React from 'react';
 import { BarChart, XAxis, YAxis, Tooltip, Legend, CartesianGrid, Bar, ResponsiveContainer } from 'recharts';
 import ApiData from '../interfaces/ApiData';
 
 interface GraphProps {
     allApiData: ApiData[];
+    selectedMonth: number; 
 }
 
-const Graph: React.FC<GraphProps> = ({ allApiData }) => {
-    // Define price ranges
+const Graph: React.FC<GraphProps> = ({ allApiData, selectedMonth }) => {
+
     const priceRanges = [
         { range: "0-100", count: 0 },
         { range: "101-200", count: 0 },
@@ -21,7 +24,6 @@ const Graph: React.FC<GraphProps> = ({ allApiData }) => {
         { range: "901-above", count: 0 },
     ];
 
-    // Categorize data based on price ranges
     allApiData.forEach(product => {
         const price = product.price;
         if (price < 100) priceRanges[0].count++;
@@ -36,10 +38,20 @@ const Graph: React.FC<GraphProps> = ({ allApiData }) => {
         else priceRanges[9].count++;
     });
 
+    // map month no to actual name of month
+    const getMonthName = (month: number) => {
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        return monthNames[month - 1];
+    };
+
+    // render
     return (
         <div className='mt-10 pr-4'>
             <h2 className="sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center text-blue-700 mb-6">
-                Bar Chart Stats
+                Bar Chart Stats - <span className='text-red-600'>{getMonthName(selectedMonth)}</span>
             </h2>
             <div className="w-full h-96 md:h-400 lg:h-400">
                 <ResponsiveContainer width="100%" height="100%">

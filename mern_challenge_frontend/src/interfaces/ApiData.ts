@@ -1,3 +1,5 @@
+// interface using typescript
+
 export default interface ApiData {
     id: number,
     title: string,

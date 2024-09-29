@@ -1,6 +1,10 @@
 const express = require('express');
 const apiDataController = require('../controllers/apiData.controller');
 
+
+// here i define the end points and the services at those endpoint
+
+
 const router = express.Router();
 
 router
