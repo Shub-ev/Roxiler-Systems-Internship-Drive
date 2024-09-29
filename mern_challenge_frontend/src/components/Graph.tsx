@@ -143,7 +143,7 @@ const Graph: React.FC<GraphProps> = ({ selectedMonth }) => {
                                 fill="#82ca9d"
                                 label
                             >
-                                {pieData.map((entry, index) => (
+                                {pieData.map((_,index) => (
                                     <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                                 ))}
                             </Pie>

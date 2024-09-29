@@ -17,7 +17,7 @@ const Table: React.FC = () => {
     const [pagination, setPagination] = useState<number>(10);
     const selectorRef = useRef<HTMLDivElement>(null);
 
-    const fetchData = async (month: number, search: string, page: number, limit: number) => {
+    const fetchData = async (search: string, page: number, limit: number) => {
         try {
             const response = await fetch(
                 `${apiUrl}?page=${page}&limit=${limit}&search=${search}`,
@@ -38,7 +38,7 @@ const Table: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchData(selectedMonth, searchTerm, pageNo, pagination);
+        fetchData(searchTerm, pageNo, pagination);
     }, [selectedMonth, searchTerm, pageNo, pagination]);
 
     useEffect(() => {
