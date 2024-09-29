@@ -2,9 +2,6 @@ const express = require('express');
 const apiDataController = require('../controllers/apiData.controller');
 
 
-// here i define the end points and the services at those endpoint
-
-
 const router = express.Router();
 
 router
@@ -22,5 +19,17 @@ router
 router
     .route('/apiSales')
     .get(apiDataController.apiSales)
+
+router
+    .route('/apiBarChart')
+    .get(apiDataController.apiBarChart)
+
+router
+    .route('/apiPieChart')
+    .get(apiDataController.apiPieChart)
+
+router
+    .route('/getAllData')
+    .get(apiDataController.getAllData)
 
 module.exports = router;

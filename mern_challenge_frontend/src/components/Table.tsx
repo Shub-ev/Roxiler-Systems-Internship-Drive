@@ -9,48 +9,37 @@ const apiUrl = import.meta.env.VITE_SERVER_URL;
 
 const Table: React.FC = () => {
     const [apiData, setApiData] = useState<ApiData[]>([]);
-    const [allApiData, setAllApiData] = useState<ApiData[]>([]);
     const [pageNo, setPageNo] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(false);
-    const [selectedMonth, setSelectedMonth] = useState<number>(2);
+    const [selectedMonth, setSelectedMonth] = useState<number>(3);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [pagination, setPagination] = useState<number>(10);
     const selectorRef = useRef<HTMLDivElement>(null);
 
-    const fetchData = async (month: number) => {
+    const fetchData = async (month: number, search: string, page: number, limit: number) => {
         try {
-            const response = await fetch(`${apiUrl}?page=1&limit=1000&month=${month}`, { method: "GET" });
+            const response = await fetch(
+                `${apiUrl}?page=${page}&limit=${limit}&search=${search}`,
+                { method: "GET" }
+            );
+
             if (!response.ok) {
-                throw new Error("Failed to fetch batches");
+                throw new Error("Failed to fetch data");
             }
+
             const resData = await response.json();
-            setAllApiData(resData.data); // Store fetched data for searching
-            setApiData(resData.data.slice(0, pagination)); // Show paginated data
-            setTotalPages(Math.ceil(resData.data.length / pagination));
-            setPageNo(1);
+            // console.log(resData);
+            setApiData(resData.data);
+            setTotalPages(resData.totalPages);
         } catch (error) {
             console.error('Error fetching API data:', error);
         }
     };
 
-    const handleSearch = () => {
-        const filteredData = allApiData.filter(item =>
-            item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.price.toString().includes(searchTerm)
-        );
-        setApiData(filteredData.slice((pageNo - 1) * pagination, pageNo * pagination));
-        setTotalPages(Math.ceil(filteredData.length / pagination));
-    };
-
     useEffect(() => {
-        fetchData(selectedMonth);
-    }, [selectedMonth]);
-
-    useEffect(() => {
-        handleSearch();
-    }, [searchTerm, pageNo, pagination]);
+        fetchData(selectedMonth, searchTerm, pageNo, pagination);
+    }, [selectedMonth, searchTerm, pageNo, pagination]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -166,7 +155,7 @@ const Table: React.FC = () => {
                 </div>
             </div>
             <Statistics month={selectedMonth} />
-            <Graph allApiData={allApiData} selectedMonth={selectedMonth}/>
+            <Graph selectedMonth={selectedMonth}/>
         </>
     );
 };

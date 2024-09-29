@@ -1,68 +1,155 @@
-// necessary imports 
-
-import React from 'react';
-import { BarChart, XAxis, YAxis, Tooltip, Legend, CartesianGrid, Bar, ResponsiveContainer } from 'recharts';
-import ApiData from '../interfaces/ApiData';
+import React, { useEffect, useState } from 'react';
+import {
+    BarChart,
+    PieChart,
+    Pie,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Legend,
+    CartesianGrid,
+    Bar,
+    ResponsiveContainer,
+    Cell
+} from 'recharts';
 
 interface GraphProps {
-    allApiData: ApiData[];
-    selectedMonth: number; 
+    selectedMonth: number;
 }
 
-const Graph: React.FC<GraphProps> = ({ allApiData, selectedMonth }) => {
+interface PieChartData {
+    category: string;
+    percentage: number;
+}
 
-    const priceRanges = [
-        { range: "0-100", count: 0 },
-        { range: "101-200", count: 0 },
-        { range: "201-300", count: 0 },
-        { range: "301-400", count: 0 },
-        { range: "401-500", count: 0 },
-        { range: "501-600", count: 0 },
-        { range: "601-700", count: 0 },
-        { range: "701-800", count: 0 },
-        { range: "801-900", count: 0 },
-        { range: "901-above", count: 0 },
-    ];
+interface BarChartData {
+    priceRange: string;
+    count: number;
+}
 
-    allApiData.forEach(product => {
-        const price = product.price;
-        if (price < 100) priceRanges[0].count++;
-        else if (price < 200) priceRanges[1].count++;
-        else if (price < 300) priceRanges[2].count++;
-        else if (price < 400) priceRanges[3].count++;
-        else if (price < 500) priceRanges[4].count++;
-        else if (price < 600) priceRanges[5].count++;
-        else if (price < 700) priceRanges[6].count++;
-        else if (price < 800) priceRanges[7].count++;
-        else if (price < 900) priceRanges[8].count++;
-        else priceRanges[9].count++;
-    });
+const graphApiBar = import.meta.env.VITE_BAR_GRAPH;
+const graphApiPie = import.meta.env.VITE_PIE_GRAPH;
 
-    // map month no to actual name of month
+const Graph: React.FC<GraphProps> = ({ selectedMonth }) => {
+    const [priceRanges, setPriceRanges] = useState<BarChartData[]>([]);
+    const [pieData, setPieData] = useState<PieChartData[]>([]);
+
+    useEffect(() => {
+        const fetchPriceRanges = async () => {
+            try {
+                // console.log(selectedMonth);
+                const response = await fetch(`${graphApiBar}?month=${selectedMonth}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error fetching bar chart data: ${response.statusText}`);
+                }
+        
+                const data = await response.json();
+                console.log('Fetched bar chart data:', data);
+
+                const formattedData: BarChartData[] = Object.entries(data).map(([priceRange, count]) => ({
+                    priceRange,
+                    count,
+                }));
+                
+                setPriceRanges(formattedData);
+            } catch (error) {
+                console.error('Error fetching bar chart data:', error);
+            }
+        };
+
+        if (selectedMonth) {
+            fetchPriceRanges();
+        }
+    }, [selectedMonth]);
+
+    useEffect(() => {
+        const fetchPieData = async () => {
+            try {
+                // console.log(selectedMonth);
+                const response = await fetch(`${graphApiPie}?month=${selectedMonth}`);
+                
+                if (!response.ok) {
+                    throw new Error(`Error fetching pie chart data: ${response.statusText}`);
+                }
+        
+                const data = await response.json();
+                console.log('Fetched pie chart data:', data);
+        
+                if (data.categories && Array.isArray(data.categories)) {
+                    const formattedData: PieChartData[] = data.categories.map((item: any) => ({
+                        category: item.category,
+                        percentage: parseFloat(item.percentage),
+                    }));
+                    
+                    setPieData(formattedData);
+                } else {
+                    console.error('Categories not found in the pie chart response data:', data);
+                    setPieData([]);
+                }
+            } catch (error) {
+                console.error('Error fetching pie chart data:', error);
+            }
+        };
+
+        if (selectedMonth) {
+            fetchPieData();
+        }
+    }, [selectedMonth]);
+
     const getMonthName = (month: number) => {
         const monthNames = [
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
-        return monthNames[month - 1];
+        return monthNames[month];
     };
+
+    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'];
 
     return (
         <div className='mt-10'>
             <h2 className="sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center text-blue-700 mb-6">
-                Bar Chart Stats - <span className='text-red-600'>{getMonthName(selectedMonth)}</span>
+                Stats for <span className='text-red-600'>{getMonthName(selectedMonth - 1)}</span>
             </h2>
-            <div className="w-full h-96 md:h-400 lg:h-400">
-                <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={priceRanges} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="range" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="count" fill="#00BFFF" />
-                    </BarChart>
-                </ResponsiveContainer>
+            <div className="flex flex-col md:flex-row gap-10">
+                {/* Bar Chart */}
+                <div className="w-full h-96 md:w-1/2">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={priceRanges} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="priceRange" />
+                            <YAxis />
+                            <Tooltip formatter={(value) => [value, 'Count']} />
+                            <Legend />
+                            <Bar dataKey="count" fill="#00BFFF" />
+                        </BarChart>
+                    </ResponsiveContainer>
+                </div>
+
+                {/* Pie Chart */}
+                <div className="w-full h-96 md:w-1/2">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={pieData}
+                                dataKey="percentage"
+                                nameKey="category"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={80}
+                                fill="#82ca9d"
+                                label
+                            >
+                                {pieData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
         </div>
     );

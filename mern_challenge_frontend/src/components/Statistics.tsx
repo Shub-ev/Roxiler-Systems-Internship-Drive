@@ -37,14 +37,14 @@ const Statistics: React.FC<Statistics> = ({ month }) => {
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
-        return monthNames[month - 1] || "Invalid Month";
+        return monthNames[month] || "Invalid Month";
     };
 
     return (
         <div className="w-[100vw] flex justify-center items-center xmt-4">
             <div className="w-[100%] md:w-[100%] lg:w-[85%] bg-white ">
                 <h2 className="sm:text-2xl md:text-3xl lg:text-3xl font-bold text-center text-blue-700 mb-6">
-                    Monthly Sales Statistics: <span className='text-red-600'>{getMonthName(month)}</span>
+                    Monthly Sales Statistics: <span className='text-red-600'>{getMonthName(month-1)}</span>
                 </h2>
                 <div className="overflow-x-auto">
                     <table className="min-w-full table-auto border-collapse border border-gray-300">
