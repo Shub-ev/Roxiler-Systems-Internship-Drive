@@ -34,54 +34,53 @@ const Graph: React.FC<GraphProps> = ({ selectedMonth }) => {
     const [priceRanges, setPriceRanges] = useState<BarChartData[]>([]);
     const [pieData, setPieData] = useState<PieChartData[]>([]);
 
+    // Fetch Bar Chart Data
     useEffect(() => {
         const fetchPriceRanges = async () => {
+            if (!selectedMonth) return;
+
             try {
-                // console.log(selectedMonth);
                 const response = await fetch(`${graphApiBar}?month=${selectedMonth}`);
-                
+
                 if (!response.ok) {
                     throw new Error(`Error fetching bar chart data: ${response.statusText}`);
                 }
-        
-                const data = await response.json();
-                console.log('Fetched bar chart data:', data);
 
+                const data: { [key: string]: number } = await response.json();
                 const formattedData: BarChartData[] = Object.entries(data).map(([priceRange, count]) => ({
                     priceRange,
                     count,
                 }));
-                
+
                 setPriceRanges(formattedData);
             } catch (error) {
                 console.error('Error fetching bar chart data:', error);
             }
         };
 
-        if (selectedMonth) {
-            fetchPriceRanges();
-        }
+        fetchPriceRanges();
     }, [selectedMonth]);
 
+    // Fetch Pie Chart Data
     useEffect(() => {
         const fetchPieData = async () => {
+            if (!selectedMonth) return;
+
             try {
-                // console.log(selectedMonth);
                 const response = await fetch(`${graphApiPie}?month=${selectedMonth}`);
-                
+
                 if (!response.ok) {
                     throw new Error(`Error fetching pie chart data: ${response.statusText}`);
                 }
-        
+
                 const data = await response.json();
-                console.log('Fetched pie chart data:', data);
-        
+
                 if (data.categories && Array.isArray(data.categories)) {
-                    const formattedData: PieChartData[] = data.categories.map((item: any) => ({
+                    const formattedData: PieChartData[] = data.categories.map((item: { category: string; percentage: string }) => ({
                         category: item.category,
-                        percentage: parseFloat(item.percentage),
+                        percentage: parseFloat(item.percentage), // Ensure it's a number
                     }));
-                    
+
                     setPieData(formattedData);
                 } else {
                     console.error('Categories not found in the pie chart response data:', data);
@@ -92,11 +91,10 @@ const Graph: React.FC<GraphProps> = ({ selectedMonth }) => {
             }
         };
 
-        if (selectedMonth) {
-            fetchPieData();
-        }
+        fetchPieData();
     }, [selectedMonth]);
 
+    // Utility to get month name
     const getMonthName = (month: number) => {
         const monthNames = [
             "January", "February", "March", "April", "May", "June",
